@@ -6,8 +6,8 @@ import altair as alt
 
 from cyclopts import App
 
-from plys.jpg.interfaces import JPGraphModel
 from plys.jpg.main import idf_to_jpgraph
+from plys.jpg.metrics import calculate_jpg_metrics
 from plys.utils import CaseData
 from plys.paths import ProjectPaths
 from plys.qoi.bivar_plots import bivar_plot, multi_bivar_plot
@@ -132,12 +132,17 @@ def jpgraph():
     jpg = idf_to_jpgraph(*cd, datetime_=datetime(2017, 7, 1, 12))
     logger.debug(jpg.show())
 
+    metrics = calculate_jpg_metrics(jpg)
+
     with tempfile.TemporaryDirectory() as td:
         tpath = Path(td) / "out.json"
-        JPGraphModel.write(jpg, tpath)
-
-        res = JPGraphModel.read(tpath)
+        metrics.write(tpath)
+        res = metrics.read(tpath)
         logger.debug(res)
+        # JPGraphModel.write(jpg, tpath)
+        #
+        # res = JPGraphModel.read(tpath)
+        # logger.debug(res)
 
     # set_levels(jpg)
     # logger.debug(jpg.show())

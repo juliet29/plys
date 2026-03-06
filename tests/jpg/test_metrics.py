@@ -9,6 +9,8 @@ from plys.jpg.metrics import (
 )
 from plys.examples.jpg.ostwald11 import VillaAlpha
 import pytest
+import tempfile
+from pathlib import Path
 
 
 class TestMetricsVillaAlpha:
@@ -32,6 +34,14 @@ class TestMetricsVillaAlpha:
     def test_calculate_control_value(self):
         res = calculate_control_value(self.G)
         assert res == self.metrics.control_value
+
+    def test_io(self):
+        with tempfile.TemporaryDirectory() as td:
+            tpath = Path(td) / "out.json"
+            self.metrics.write(tpath)
+            res = self.metrics.read(tpath)
+            assert res.total_depth == self.metrics.total_depth
+
         # for rk, mk in zip(res.keys(), self.metrics.control_value.keys()):
         #
         #     assert round(res[rk], 2) == self.metrics.control_value[mk]

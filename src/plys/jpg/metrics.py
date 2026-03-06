@@ -3,7 +3,6 @@
 
 from plys.jpg.interfaces import JPGraph
 from utils4plans.lists import sort_and_group_objects_dict
-from loguru import logger
 from plys.jpg.interfaces import JPGMetrics
 
 
@@ -15,7 +14,7 @@ def calculate_total_depth(G: JPGraph):
     total_depth = 0
     for level, nodes in levels.items():
         val = level * len(nodes)
-        logger.debug(f"level: {level}, n_nodes: {len(nodes)}")
+        # logger.debug(f"level: {level}, n_nodes: {len(nodes)}")
         total_depth += val
 
     return total_depth

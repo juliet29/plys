@@ -93,20 +93,18 @@ class JPGraphModel(BaseModel):
 
     @classmethod
     def read(cls, path: Path):
-        data = read_json(
-            path,
-        )
-        model_graph = cls.model_validate(data)
+        data = read_json(path)
+        model = cls.model_validate(data)
         logger.debug(data)
 
-        logger.debug(model_graph)
-        G = JPGraph.create(model_graph.nodes, model_graph.edges)
+        logger.debug(model)
+        G = JPGraph.create(model.nodes, model.edges)
         return G
 
     @classmethod
     def write(cls, G: JPGraph, path: Path):
-        model_graph = cls.model_validate({"nodes": G.jpnodes, "edges": G.jpedges})
-        write_json(model_graph.model_dump(), path, OVERWRITE=True)
+        model = cls.model_validate({"nodes": G.jpnodes, "edges": G.jpedges})
+        write_json(model.model_dump(), path, OVERWRITE=True)
 
 
 class JPGMetrics(BaseModel):
@@ -115,10 +113,13 @@ class JPGMetrics(BaseModel):
     relative_asymmetry: float
     control_value: dict[str, float]
 
+    @classmethod
+    def read(cls, path: Path):
+        data = read_json(path)
+        model = cls.model_validate(data)
+        return model
+
     def write(self, path: Path):
         write_json(self.model_dump(), path, OVERWRITE=True)
 
-    @classmethod
-    def read(cls, path: Path):
-        pass
         # TODO need to read for creating the unifying data...

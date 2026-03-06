@@ -3,13 +3,13 @@ from plys.jpg.interfaces import JPGraph, JPNodeData, JPNode, JPGMetrics
 
 class VillaAlpha:
     nodes = [
-        JPNode("entry", JPNodeData(is_carrier=True, level=0)),
-        JPNode("A", JPNodeData(level=1)),
-        JPNode("B", JPNodeData(level=2)),
-        JPNode("C", JPNodeData(level=5)),
-        JPNode("D", JPNodeData(level=4)),
-        JPNode("E", JPNodeData(level=3)),
-        JPNode("F", JPNodeData(level=2)),
+        JPNode(name="entry", data=JPNodeData(is_carrier=True, level=0)),
+        JPNode(name="A", data=JPNodeData(level=1)),
+        JPNode(name="B", data=JPNodeData(level=2)),
+        JPNode(name="C", data=JPNodeData(level=5)),
+        JPNode(name="D", data=JPNodeData(level=4)),
+        JPNode(name="E", data=JPNodeData(level=3)),
+        JPNode(name="F", data=JPNodeData(level=2)),
     ]
 
     edges = [

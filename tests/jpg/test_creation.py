@@ -1,25 +1,40 @@
+from pathlib import Path
+import tempfile
 from datetime import datetime
 
-
+from plys.jpg.interfaces import JPGraphModel
 from plys.jpg.main import idf_to_jpgraph, set_levels
-from plys.utils import CaseData
 from plys.paths import ProjectPaths
-
+from plys.utils import CaseData
 
 # TODO: move this to examples...
-cd = CaseData(ProjectPaths.sample_idf, ProjectPaths.sample_sql)
 
 
-def test_create_from_idf():
-    jpg = idf_to_jpgraph(*cd, datetime_=datetime(2017, 7, 1, 12))
-    assert len(jpg.jpnodes) > 1
-    assert len(list(jpg.edges)) > 1
+class TestJPGCreation:
+    cd = CaseData(ProjectPaths.sample_idf, ProjectPaths.sample_sql)
 
+    datetime = datetime(2017, 7, 1, 12)
 
-def test_set_levels():
-    jpg = idf_to_jpgraph(*cd, datetime_=datetime(2017, 7, 1, 12))
-    # TODO: modifyung in place, not very functional, could cause errors later...
-    jpg = set_levels(jpg)
+    def test_create_from_idf(self):
+        jpg = idf_to_jpgraph(*self.cd, self.datetime)
+        assert len(jpg.jpnodes) > 1
+        assert len(list(jpg.edges)) > 1
 
-    levels = set([i.data.level for i in jpg.jpnodes])
-    assert len(levels) > 1
+    @property
+    def G(self):
+        return idf_to_jpgraph(*self.cd, self.datetime)
+
+    def test_set_levels(self):
+        # TODO: modifyung in place, not very functional, could cause errors later...
+        jpg = set_levels(self.G)
+
+        levels = set([i.data.level for i in jpg.jpnodes])
+        assert len(levels) > 1
+
+    def test_io(self):
+        with tempfile.TemporaryDirectory() as td:
+            tpath = Path(td) / "out.json"
+            JPGraphModel.write(self.G, tpath)
+            res = JPGraphModel.read(tpath)
+            assert len(res.jpnodes) > 1
+            assert len(res.jpedges) > 1

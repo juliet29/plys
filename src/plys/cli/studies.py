@@ -1,10 +1,13 @@
+from pathlib import Path
+import tempfile
 from utils4plans.logconfig import logset
 from datetime import datetime
 import altair as alt
 
 from cyclopts import App
 
-from plys.jpg.main import idf_to_jpgraph, set_levels
+from plys.jpg.interfaces import JPGraphModel
+from plys.jpg.main import idf_to_jpgraph
 from plys.utils import CaseData
 from plys.paths import ProjectPaths
 from plys.qoi.bivar_plots import bivar_plot, multi_bivar_plot
@@ -128,8 +131,17 @@ def plot_bivar_multi():
 def jpgraph():
     jpg = idf_to_jpgraph(*cd, datetime_=datetime(2017, 7, 1, 12))
     logger.debug(jpg.show())
-    set_levels(jpg)
-    logger.debug(jpg.show())
+
+    with tempfile.TemporaryDirectory() as td:
+        tpath = Path(td) / "out.json"
+        JPGraphModel.write(jpg, tpath)
+
+        res = JPGraphModel.read(tpath)
+        logger.debug(res)
+
+    # set_levels(jpg)
+    # logger.debug(jpg.show())
+    #
 
 
 ### --- CLUSTERING ----

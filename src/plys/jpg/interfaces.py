@@ -1,27 +1,25 @@
-from dataclasses import dataclass
 from pathlib import Path
+from loguru import logger
 import networkx as nx
 from utils4plans.io import read_json, write_json
 from utils4plans.lists import get_unique_one
 from pydantic import BaseModel
 
-from plan2eplus.geometry.coords import (
-    Coord,
-)  # TODO: make plan2eplus use utils4plans coords, just using here because that is what the incoming graph will use...
 
 # TODO: but do have some ability to control how this is read in.. when get to actually handlling io for the AFNGraph..
 #
 
 
-@dataclass
-class JPNodeData:
+# @dataclass
+class JPNodeData(BaseModel):
     is_carrier: bool = False
     level: int = 0
-    coord: Coord = Coord(0, 0)
-    ix_on_level: int = 0
+    # coord: Coord = Coord(0, 0)
+    # ix_on_level: int = 0
+    #
 
 
-@dataclass
+# @dataclass
 class JPNode(BaseModel):
     name: str
     data: JPNodeData
@@ -49,10 +47,10 @@ class JPGraph(nx.Graph):
 
     @classmethod
     def create(cls, nodes: list[JPNode], edges: list[Edge]):
-        c = cls()
-        c.add_jpnodes(nodes)
-        c.add_edges_from([i.as_tuple for i in edges])
-        pass
+        G = cls()
+        G.add_jpnodes(nodes)
+        G.add_edges_from([i.as_tuple for i in edges])
+        return G
 
     @property
     def num_nodes(self):
@@ -62,6 +60,12 @@ class JPGraph(nx.Graph):
     def jpnodes(self):
         nodes = self.nodes(data=True)
         res = [JPNode(name=i, data=data_["data"]) for i, data_ in nodes]
+        return res
+
+    @property
+    def jpedges(self):
+        edges = self.edges(data=False)
+        res = [Edge(source=u, target=v) for u, v in edges]
         return res
 
     def update_jpnode(self, name: str, data: JPNodeData):
@@ -87,15 +91,22 @@ class JPGraphModel(BaseModel):
     nodes: list[JPNode]
     edges: list[Edge]
 
-    def read(self, path: Path):
+    @classmethod
+    def read(cls, path: Path):
         data = read_json(
             path,
         )
-        model_graph = self.model_validate(data)
-        return JPGraph.create(model_graph.nodes, model_graph.edges)
+        model_graph = cls.model_validate(data)
+        logger.debug(data)
 
-    def write(self, path: Path):
-        write_json(self.model_dump(), path, OVERWRITE=True)
+        logger.debug(model_graph)
+        G = JPGraph.create(model_graph.nodes, model_graph.edges)
+        return G
+
+    @classmethod
+    def write(cls, G: JPGraph, path: Path):
+        model_graph = cls.model_validate({"nodes": G.jpnodes, "edges": G.jpedges})
+        write_json(model_graph.model_dump(), path, OVERWRITE=True)
 
 
 class JPGMetrics(BaseModel):

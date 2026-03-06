@@ -1,5 +1,4 @@
 from pathlib import Path
-from loguru import logger
 from utils4plans.lists import get_unique_one
 from datetime import datetime
 
@@ -32,7 +31,7 @@ def set_levels(G: JPGraph):
     for node in other_nodes:
         try:
             distance = nx.shortest_path_length(G, source=carrier_node.name, target=node)
-            logger.debug(f"{carrier_node.name}, {node}, {distance}")
+            # logger.debug(f"{carrier_node.name}, {node}, {distance}")
             update_level(node, int(distance))
         except nx.NetworkXNoPath:
             # NOTE: the node is disconnected, assign is a negative value for now, potentially delete later..

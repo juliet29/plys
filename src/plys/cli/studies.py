@@ -5,7 +5,7 @@ import altair as alt
 
 from cyclopts import App
 
-from plys.classify.main import fit_neighbors, show_neighbors_one
+from plys.classify.main import fit_samples, prep_cluster_df, show_clusters
 from plys.jpg.main import idf_to_jpgraph, set_levels
 from plys.utils import CaseData
 from plys.paths import ProjectPaths
@@ -139,8 +139,17 @@ def jpgraph():
 def kn():
     iris = load_iris(as_frame=True)
     X = iris.data[["sepal length (cm)"]].to_numpy()
-    model = fit_neighbors(X, 3)
-    return show_neighbors_one(model, [[1]])
+    model, labels = fit_samples(X, 3)
+    logger.debug(model)
+    logger.debug(labels)
+    df = prep_cluster_df(X, labels, ["sepal len"])
+    logger.debug(df)
+    chart = show_clusters(df, "sepal len")
+    chart.show()
+
+    # model = fit_neighbors(X, 3)
+    # return model.predict()
+    # return show_neighbors_one(model, [[1]])
 
 
 ### ------- END COMMANDS ---------

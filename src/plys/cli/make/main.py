@@ -8,9 +8,11 @@ from plys.paths import ProjectPaths
 from plys.qoi.registry import AltairRenderers
 from plys.qoi.theme import default_theme
 from loguru import logger
+from plys.cli.make.jpg import jpg
 
 
 app = App()
+app.command(jpg)
 
 
 def keep():

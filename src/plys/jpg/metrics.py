@@ -54,11 +54,13 @@ def calculate_jpg_metrics(G: JPGraph):
     total_depth = calculate_total_depth(G)
     mean_depth = calculate_mean_depth(G, total_depth)
     relative_asymmetry = calculate_relative_asymmetry(G, mean_depth)
-    control_value = calculate_control_value(G)
+    # control_value = calculate_control_value(G)
+    # TODO: the control value will be the max control value or a list.. / some special way of going into the dataframe if want all ..
 
     return JPGMetrics(
+        graph_name=G.graph_name,
         total_depth=total_depth,
         mean_depth=mean_depth,
         relative_asymmetry=relative_asymmetry,
-        control_value=control_value,
+        # control_value=control_value,
     )

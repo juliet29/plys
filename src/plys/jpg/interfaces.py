@@ -124,10 +124,11 @@ class JPGraphModel(BaseModel):
 
 
 class JPGMetrics(BaseModel):
+    graph_name: str
     total_depth: float
     mean_depth: float
     relative_asymmetry: float
-    control_value: dict[str, float]
+    # control_value: dict[str, float]
 
     @classmethod
     def read(cls, path: Path):

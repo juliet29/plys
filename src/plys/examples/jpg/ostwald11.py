@@ -2,6 +2,7 @@ from plys.jpg.interfaces import JPGraph, JPNodeData, JPNode, JPGMetrics
 
 
 class VillaAlpha:
+    graph_name = "ostwald11_villa_alpha"
     nodes = [
         JPNode(name="entry", data=JPNodeData(is_carrier=True, level=0)),
         JPNode(name="A", data=JPNodeData(level=1)),
@@ -22,11 +23,12 @@ class VillaAlpha:
 
     @property
     def graph(self):
-        return JPGraph.create("ostwald11", self.nodes, self.edges)
+        return JPGraph.create(self.graph_name, self.nodes, self.edges)
 
     @property
     def metrics(self):
         return JPGMetrics(
+            graph_name=self.graph_name,
             total_depth=17,
             mean_depth=2.83,
             relative_asymmetry=0.73,

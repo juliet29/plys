@@ -24,5 +24,5 @@ build-backend = "uv_build"
 
 
 [project.scripts]
-plys = "plys.cli.main:main"
+plys = "plys.cli.make.main:main"
 plys-studies = "plys.cli.studies:main"

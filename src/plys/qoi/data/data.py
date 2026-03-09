@@ -8,11 +8,6 @@ from plys.qoi.xarray_helpers import convert_xarray_to_polars, select_time
 from datetime import datetime
 
 from plys.qoi.data.spaces import create_space_df
-import polars_config_meta
-
-
-def keep():
-    polars_config_meta.compare_discovered_methods
 
 
 def select_custom_times(
@@ -48,7 +43,7 @@ def to_dataframe_with_spaces(qoi: QOIType, idf: Path, sql: Path):
     return qoid
 
 
-def to_multi_data(qois: Sequence[QOIType], idf: Path, sql: Path, case_name: str = ""):
+def to_multi_data(qois: Sequence[QOIType], idf: Path, sql: Path):
 
     def to_df(qoi: QOIType):
         qoid = select_custom_times(QOIandData(qoi, sql))
@@ -66,9 +61,4 @@ def to_multi_data(qois: Sequence[QOIType], idf: Path, sql: Path, case_name: str 
         d0 = d0.join(df, on=["datetimes", "space_names"])
 
     space_df = create_space_df(idf)
-    d1 = d0.join(space_df, on="space_names")
-    if case_name:
-        return d1.config_meta.set(  # pyright: ignore[reportAttributeAccessIssue]
-            case_name=case_name
-        )  # pyright: ignore[reportAttributeAccessIssue]
-    return d1
+    return d0.join(space_df, on="space_names")

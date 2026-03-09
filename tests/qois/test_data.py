@@ -56,18 +56,3 @@ def test_custom_qoi_with_non_basic_fx():
     ).original_arr
     spaces = res.space_names.to_series().to_list()
     assert len(spaces) == len(set(spaces))
-
-
-def test_multidata_casename():
-    case_name = "example"
-    df = to_multi_data(
-        [
-            QOIRegistry.custom.net_vent_heat_gain,
-            QOIRegistry.vent_vol,
-            QOIRegistry.mix_vol,
-        ],
-        ProjectPaths.sample_idf,
-        ProjectPaths.sample_sql,
-        case_name,
-    )
-    assert df.config_meta.get_metadata()["case_name"] == case_name

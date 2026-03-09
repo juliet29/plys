@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import NamedTuple
 import polars as pl
 import xarray as xr
 from pathlib import Path
@@ -39,3 +40,14 @@ class QOIandData:
 
     def set_dataframe(self, df: pl.DataFrame):
         self.dataframe = df
+
+
+class CaseQOIandData(NamedTuple):
+    case_name: str
+    dataframe: pl.DataFrame
+
+    @classmethod
+    def read(cls, path: Path):
+        case_name = pl.read_parquet_metadata(path)["case_name"]
+        dataframe = pl.read_parquet(path)
+        return cls(case_name, dataframe)

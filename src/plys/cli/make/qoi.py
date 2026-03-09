@@ -2,7 +2,8 @@ from pathlib import Path
 
 from loguru import logger
 
-from plys.qoi.data.outputs import gather_standard_data
+from plys.qoi.data.interfaces import CaseQOIandData
+from plys.qoi.data.outputs import consolidate_data, gather_standard_data
 from cyclopts import App
 
 
@@ -13,12 +14,13 @@ qoi = App(name="qoi")
 def create(
     case_name: str, idf_path: Path, sql_path: Path, zonal_path: Path, surface_path: Path
 ):
-    dfs = gather_standard_data(idf_path, sql_path, case_name)
-    dfs.zonal.config_meta.write_parquet(zonal_path)
-    dfs.surface.config_meta.write_parquet(surface_path)
-    logger.debug("Finished writing standard data")
+    gather_standard_data(case_name, idf_path, sql_path, zonal_path, surface_path)
+    logger.success("Finished writing standard data")
 
 
 @qoi.command()
-def consolidate(data_paths: list[Path], csv_path: Path):
-    pass
+def consolidate(in_paths: list[Path], out_path: Path):
+    datas = [CaseQOIandData.read(p) for p in in_paths]
+    df = consolidate_data(datas)
+    df.write_parquet(out_path)
+    logger.success("Finished consolidating data")

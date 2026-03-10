@@ -5,14 +5,15 @@ from cyclopts import App
 
 from plys.fpviz.main import plan_plot
 from plys.paths import ProjectPaths
-from plys.qoi.registry import AltairRenderers
-from plys.qoi.theme import default_theme
+from plys.qoi.plots.altair_helpers import AltairRenderers
+from plys.qoi.plots.theme import default_theme
 from loguru import logger
 from plys.cli.make.jpg import jpg
-
+from plys.cli.make.qoi import qoi
 
 app = App()
 app.command(jpg)
+app.command(qoi)
 
 
 def keep():

@@ -15,7 +15,7 @@ rule jpg_all: # TODO: this should work if set force flag to run all above.. need
 rule jpg_create:
     input:
         idf = "<samples_loc>/{sample}/out.idf",
-        sql = "<samples_loc>/{sample}/eplusout.sql"
+        sql = "<samples_loc>/{sample}/results/eplusout.sql"
     output:
         jpg = "<jpg_loc>/graphs/{sample}/out.json" 
     params:

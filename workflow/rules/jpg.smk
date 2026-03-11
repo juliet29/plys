@@ -4,18 +4,11 @@ from pathlib import Path
 configfile: "config/test.yaml"
 
 
-rule jpg_all: # TODO: this should work if set force flag to run all above.. need to play w/ it and test
-    input:
-        "<shared_loc>/metrics/out.csv"
 
-# rule create_jpg_all:
-#     input:
-#       expand("<jpg_loc>/graphs/{sample}/out.json", sample=get_samples)
 
 rule jpg_create:
     input:
-        idf = "<samples_loc>/{sample}/out.idf",
-        sql = "<samples_loc>/{sample}/results/eplusout.sql"
+        unpack(make_eplus_inputs)
     output:
         jpg = "<jpg_loc>/graphs/{sample}/out.json" 
     params:
@@ -31,7 +24,7 @@ rule jpg_create:
             --jpg-path {output.jpg}
         """
 
-rule jpg_metrics:
+rule jpg_create_metrics:
     input:
         jpg = "<jpg_loc>/graphs/{sample}/out.json"
     output:
@@ -43,9 +36,13 @@ rule jpg_metrics:
             --metrics-path {output.metrics}
         """
 
-rule jpg_consolidate:
+rule jpg_create_target: 
     input:
-        metrics = expand("<jpg_loc>/metrics/{sample}/out.json", sample=get_samples)
+        expand("<jpg_loc>/metrics/{sample}/out.json", sample=get_jpg_samples)
+
+rule jpg_consolidate_target:
+    input:
+        metrics = expand("<jpg_loc>/metrics/{sample}/out.json", sample=get_eplus_samples)
     output:
         csv = "<shared_loc>/metrics/out.csv"
     shell:
@@ -54,3 +51,4 @@ rule jpg_consolidate:
             --metrics-paths {input.metrics} \
             --csv-path {output.csv}
         """
+

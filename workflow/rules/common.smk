@@ -1,19 +1,30 @@
 
+def make_eplus_inputs(wildcards):
 
-def get_samples(wildcards): # TODO: move to a common.smk
+    loc = Path(config["pathvars"]["samples_loc"])
+    idf = loc / "{wildcards.sample}/out.idf".format(wildcards=wildcards),
+    sql = loc / "{wildcards.sample}/results/eplusout.sql".format(wildcards=wildcards)
+    return {"idf": idf, "sql": sql}
+
+def get_eplus_samples(wildcards): 
   loc = Path(config["pathvars"]["samples_loc"])
-  path = loc / "{folder}" /  "{sample}" / "results/eplusout.sql" 
-  # print(path)
-  # TODO: can us loguru here as well, if want this to be part of the reporting. 
-  # TODO: need to consider that there are many paths => data is in buckets... but can keep in buckets? 
+  path = loc /  "{sample}" / "results/eplusout.sql" 
+  samples, = glob_wildcards(path)
 
+  return samples
+
+def get_qoi_samples(wildcards): 
+  loc = Path(config["pathvars"]["qoi_loc"])
+  path = loc /  "{sample}" / "{subfolder}/out.parquet" 
   results = glob_wildcards(path)
+  print(results)
 
-  # print(samp
   return results.sample
 
-rule test:
-  input:
-    expand("{sample}", sample=get_samples)
-  shell:
-    "echo {input}"
+def get_jpg_samples(wildcards): 
+  loc = Path(config["pathvars"]["jpg_loc"])
+  path = loc / "metrics"/  "{sample}" / "out.json" 
+  results = glob_wildcards(path)
+
+  return results.sample
+

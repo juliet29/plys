@@ -42,7 +42,7 @@ rule jpg_create_target:
 
 rule jpg_consolidate_target:
     input:
-        metrics = expand("<jpg_loc>/metrics/{sample}/out.json", sample=get_eplus_samples)
+        metrics = expand("<jpg_loc>/metrics/{sample}/out.json", sample=get_jpg_samples)
     output:
         csv = "<shared_loc>/metrics/out.csv"
     shell:

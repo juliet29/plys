@@ -17,7 +17,6 @@ def get_qoi_samples(wildcards):
   loc = Path(config["pathvars"]["qoi_loc"])
   path = loc /  "{sample}" / "{subfolder}/out.parquet" 
   results = glob_wildcards(path)
-  print(results)
 
   return results.sample
 

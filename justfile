@@ -3,6 +3,14 @@ push-tag end:
   git tag -a s0.1.{{end}} -m s0.1.{{end}}
   git push --tag
 
+# TODO: share this justfile with everybody! 
+bump-version:
+  uv version --bump patch
+  git add uv.lock pyproject.toml
+  git commit -m "bump version"
+  git push
+  git tag
+  
 
 publish-tag end:
   @echo "Have you updated the version number for pushing to pypi?" 

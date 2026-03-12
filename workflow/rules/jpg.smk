@@ -38,8 +38,12 @@ rule jpg_create_metrics:
 
 rule jpg_create_target: 
     input:
-        expand("<jpg_loc>/metrics/{sample}/out.json", sample=get_jpg_samples)
+        expand("<jpg_loc>/graphs/{sample}/out.json", sample=get_eplus_samples)
 
+rule jpg_create_metrics_target: 
+    input:
+        expand("<jpg_loc>/metrics/{sample}/out.json", sample=get_eplus_samples)
+          
 rule jpg_consolidate_target:
     input:
         metrics = expand("<jpg_loc>/metrics/{sample}/out.json", sample=get_jpg_samples)

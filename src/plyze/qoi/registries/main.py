@@ -3,11 +3,11 @@ from plyze.qoi.registries.custom import CustomQOIRegistry
 
 
 class SiteQOIRegistry:
-    temp = EpQOI("Site Outdoor Air Drybulb Temperature", "tout", "ºC", "Site")
+    t_out = EpQOI("Site Outdoor Air Drybulb Temperature", "t_out", "C", "Site")
     wind_speed = EpQOI("Site Wind Speed", "wind_speed", "m/s", "Site")
-    wind_direction = EpQOI("Site Wind Direction", "wind_direction", "º", "Site")
+    wind_direction = EpQOI("Site Wind Direction", "wind_direction", "deg", "Site")
 
-    all = [temp, wind_speed, wind_direction]
+    all = [t_out, wind_speed, wind_direction]
     # TODO: on next E+ cration record the solar radiation
     # solar_rad = EpQOI("Solar Radiation", "tout", "ºC", "Site")
 

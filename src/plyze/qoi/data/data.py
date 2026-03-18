@@ -1,7 +1,6 @@
 from itertools import product
 from typing import Sequence
 from dataclasses import dataclass
-from loguru import logger
 import xarray as xr
 from pathlib import Path
 from plyze.qoi.data.interfaces import QOIandData
@@ -32,7 +31,6 @@ class TimeSelection:
 
 
 def select_custom_times(qoidata: QOIandData, ts: TimeSelection):
-    logger.debug(ts.calc_datetimes())
     arr = select_time(qoidata.original_arr, ts.calc_datetimes())
     qoidata.set_array(arr)
     return qoidata

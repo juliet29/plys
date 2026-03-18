@@ -5,11 +5,10 @@ from loguru import logger
 from utils4plans.logconfig import logset
 
 from plyze.examples.casedata import ex
-from plyze.examples.time_selection import EXAMPLE_TIME_SELECTION
-from plyze.qoi.data.data import TimeSelection
+from plyze.examples.time_selection import EXAMPLE_TIME_SELECTION as ets
 from plyze.plots.altair_helpers import AltairRenderers
 from plyze.plots.theme import default_theme
-from plyze.temporal.main import make_wind_pressure_df
+from plyze.temporal.main import get_temporal_qois
 
 app = App()
 
@@ -18,21 +17,17 @@ def keep():
     default_theme()
     logger.debug("")
     plt.plot()
+    ex.sql
 
 
 ### ----- DATA --------
 
 
 @app.command
-def ts():
-    ts = TimeSelection(2017, 1, [1], [])
-    return ts.calc_datetimes()
-    return ts
-
-
-@app.command
 def wp():
-    return make_wind_pressure_df(ex.sql, EXAMPLE_TIME_SELECTION)
+    df = get_temporal_qois(["a", "b"], [ex.sql, ex.sql], ets)
+
+    return df.schema
 
 
 # @app.command()

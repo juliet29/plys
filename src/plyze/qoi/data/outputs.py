@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import NamedTuple
 from loguru import logger
 import polars as pl
-from plyze.qoi.data.data import to_multi_data
+from plyze.qoi.data.data import TimeSelection, to_multi_data
 from plyze.qoi.data.interfaces import CaseQOIandData
 from plyze.qoi.registries.main import QOIRegistry as QR
 
@@ -12,7 +12,7 @@ class StandardData(NamedTuple):
     surface: pl.DataFrame
 
 
-def get_zonal_qois(idf: Path, sql: Path):
+def get_zonal_qois(idf: Path, sql: Path, ts: TimeSelection):
     qois = [
         QR.temp,
         QR.vent_vol,
@@ -26,25 +26,22 @@ def get_zonal_qois(idf: Path, sql: Path):
         QR.custom.combined_volume,
         # TODO: latent heat gain (which is not even in output variable requests currently), net incoming flow over a zone, net outgoing flow over a zone, combined mixing heat loss and heat gain
     ]
-    return to_multi_data(qois, idf, sql)
+    return to_multi_data(qois, idf, sql, ts)
 
 
-def get_surface_qois(idf: Path, sql: Path):
+def get_surface_qois(idf: Path, sql: Path, ts: TimeSelection):
     qois = [QR.flow_out, QR.flow_in, QR.custom.net_out_flow]
-    return to_multi_data(qois, idf, sql)
+    return to_multi_data(qois, idf, sql, ts)
 
 
 # TODO: environmental qois
 # NOTE: environmental qois would only need to be recorded once, and can actually be taken directly from the EPW, which is a different process
 
 
-def gather_standard_data(
-    idf: Path,
-    sql: Path,
-):
+def gather_standard_data(idf: Path, sql: Path, ts: TimeSelection):
 
-    zonal_df = get_zonal_qois(idf, sql)
-    surface_df = get_surface_qois(idf, sql)
+    zonal_df = get_zonal_qois(idf, sql, ts)
+    surface_df = get_surface_qois(idf, sql, ts)
     return StandardData(zonal_df, surface_df)
 
 

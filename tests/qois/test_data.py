@@ -4,6 +4,7 @@ from plyze.qoi.data.data import to_dataframe_with_spaces, to_multi_data
 from plyze.qoi.data.interfaces import QOIandData
 from plyze.qoi.data.spaces import create_space_df
 from plyze.qoi.registries.main import QOIRegistry
+from plyze.examples.time_selection import EXAMPLE_TIME_SELECTION
 
 
 def test_create_space_df():
@@ -14,7 +15,10 @@ def test_create_space_df():
 
 def test_qoi_data_creation():
     res = to_dataframe_with_spaces(
-        QOIRegistry.flow_out, ProjectPaths.sample_idf, ProjectPaths.sample_sql
+        QOIRegistry.flow_out,
+        ProjectPaths.sample_idf,
+        ProjectPaths.sample_sql,
+        EXAMPLE_TIME_SELECTION,
     )
     assert isinstance(res.dataframe, pl.DataFrame)
     assert res.dataframe["space_names"].len() > 1
@@ -25,6 +29,7 @@ def test_qoi_data_creation_with_custom_qoi():
         QOIRegistry.custom.net_out_flow,
         ProjectPaths.sample_idf,
         ProjectPaths.sample_sql,
+        EXAMPLE_TIME_SELECTION,
     )
     assert isinstance(res.dataframe, pl.DataFrame)
 
@@ -34,6 +39,7 @@ def test_multidata():  # TODO: put this into a class
         QOIRegistry.custom.net_vent_heat_gain,
         ProjectPaths.sample_idf,
         ProjectPaths.sample_sql,
+        EXAMPLE_TIME_SELECTION,
     )
     df = to_multi_data(
         [
@@ -43,6 +49,7 @@ def test_multidata():  # TODO: put this into a class
         ],
         ProjectPaths.sample_idf,
         ProjectPaths.sample_sql,
+        EXAMPLE_TIME_SELECTION,
     )
     assert isinstance(single_data.dataframe, pl.DataFrame)
     assert single_data.dataframe.height == df.height

@@ -5,10 +5,11 @@ from loguru import logger
 from utils4plans.logconfig import logset
 
 from plyze.examples.casedata import ex
-from plyze.qoi.data.interfaces import CaseQOIandData
-from plyze.qoi.data.outputs import consolidate_data, get_surface_qois
+from plyze.examples.time_selection import EXAMPLE_TIME_SELECTION
+from plyze.qoi.data.data import TimeSelection
 from plyze.plots.altair_helpers import AltairRenderers
 from plyze.plots.theme import default_theme
+from plyze.temporal.main import make_wind_pressure_df
 
 app = App()
 
@@ -20,21 +21,35 @@ def keep():
 
 
 ### ----- DATA --------
-@app.command()
-def get():
-    res = get_surface_qois(*ex)
-    logger.debug(res)
-    logger.debug(res.columns)
 
 
-@app.command()
-def cons():
-    df1 = get_surface_qois(*ex)
-    df2 = get_surface_qois(*ex)
-    case_names = ["c1", "c2"]
-    case_datas = [CaseQOIandData(case, df) for case, df in zip(case_names, [df1, df2])]
-    df = consolidate_data(case_datas)
-    logger.debug(df)
+@app.command
+def ts():
+    ts = TimeSelection(2017, 1, [1], [])
+    return ts.calc_datetimes()
+    return ts
+
+
+@app.command
+def wp():
+    return make_wind_pressure_df(ex.sql, EXAMPLE_TIME_SELECTION)
+
+
+# @app.command()
+# def get():
+#     res = get_surface_qois(*ex)
+#     logger.debug(res)
+#     logger.debug(res.columns)
+#
+#
+# @app.command()
+# def cons():
+#     df1 = get_surface_qois(*ex)
+#     df2 = get_surface_qois(*ex)
+#     case_names = ["c1", "c2"]
+#     case_datas = [CaseQOIandData(case, df) for case, df in zip(case_names, [df1, df2])]
+#     df = consolidate_data(case_datas)
+#     logger.debug(df)
 
 
 ### ------- SINGLE PLOTS

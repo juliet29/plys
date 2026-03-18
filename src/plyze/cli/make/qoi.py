@@ -2,6 +2,7 @@ from pathlib import Path
 
 from loguru import logger
 
+from plyze.qoi.data.data import TimeSelection
 from plyze.qoi.data.interfaces import CaseQOIandData
 from plyze.qoi.data.outputs import consolidate_data, gather_standard_data
 from cyclopts import App, Parameter
@@ -12,10 +13,15 @@ qoi = App(name="qoi")
 
 @qoi.command()
 def create(
-    case_name: str, idf_path: Path, sql_path: Path, zonal_path: Path, surface_path: Path
+    case_name: str,
+    idf_path: Path,
+    sql_path: Path,
+    zonal_path: Path,
+    surface_path: Path,
+    ts: TimeSelection,
 ):
 
-    data = gather_standard_data(idf_path, sql_path)
+    data = gather_standard_data(idf_path, sql_path, ts)
     CaseQOIandData(case_name, data.zonal).write(zonal_path)
     CaseQOIandData(case_name, data.surface).write(surface_path)
 

@@ -1,5 +1,7 @@
 from itertools import product
 from typing import Sequence
+from dataclasses import dataclass
+from loguru import logger
 import xarray as xr
 from pathlib import Path
 from plyze.qoi.data.interfaces import QOIandData
@@ -10,21 +12,28 @@ from datetime import datetime
 from plyze.qoi.data.spaces import create_space_df
 
 
+@dataclass
 class TimeSelection:
-    year: int = 2017
-    month: int = 7
-    days: list[int] = [1]
-    hours: list[int] = [9, 12, 15, 18, 21, 0]
+    year: int
+    month: int
+    days: list[int]
+    hours: list[int]
+
+    def __post_init__(self):
+        if not self.hours:
+            self.hours = list(range(0, 23))
+
+    def calc_datetimes(self):
+        datetimes = [
+            datetime(year=self.year, month=self.month, day=i, hour=j)
+            for i, j in product(self.days, self.hours)
+        ]
+        return datetimes
 
 
-def select_custom_times(qoidata: QOIandData, ts: TimeSelection = TimeSelection()):
-    datetimes = [
-        datetime(year=ts.year, month=ts.month, day=i, hour=j)
-        for i, j in product(ts.days, ts.hours)
-    ]
-    # TODO: datetime object that can handle complex selections... and that can pass around.. definitely DONT want to be passing these about one by one
-    # TODO: for reproducibility purposes this should be stated in the yaml
-    arr = select_time(qoidata.original_arr, datetimes)
+def select_custom_times(qoidata: QOIandData, ts: TimeSelection):
+    logger.debug(ts.calc_datetimes())
+    arr = select_time(qoidata.original_arr, ts.calc_datetimes())
     qoidata.set_array(arr)
     return qoidata
 
@@ -35,8 +44,8 @@ def to_dataframe(qoidata: QOIandData):
     return df
 
 
-def to_dataframe_with_spaces(qoi: QOIType, idf: Path, sql: Path):
-    qoid = select_custom_times(QOIandData(qoi, sql))
+def to_dataframe_with_spaces(qoi: QOIType, idf: Path, sql: Path, ts: TimeSelection):
+    qoid = select_custom_times(QOIandData(qoi, sql), ts)
     df = to_dataframe(qoid)
     space_df = create_space_df(idf)
 
@@ -45,10 +54,10 @@ def to_dataframe_with_spaces(qoi: QOIType, idf: Path, sql: Path):
     return qoid
 
 
-def to_multi_data(qois: Sequence[QOIType], idf: Path, sql: Path):
+def to_multi_data(qois: Sequence[QOIType], idf: Path, sql: Path, ts: TimeSelection):
 
     def to_df(qoi: QOIType):
-        qoid = select_custom_times(QOIandData(qoi, sql))
+        qoid = select_custom_times(QOIandData(qoi, sql), ts)
         return to_dataframe(qoid)
 
     # TODO: add utils4plans as set_unique function

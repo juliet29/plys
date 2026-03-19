@@ -1563,7 +1563,7 @@ wheels = [
 
 [[package]]
 name = "plyze"
-version = "0.1.11"
+version = "0.1.12"
 source = { editable = "." }
 dependencies = [
     { name = "altair" },

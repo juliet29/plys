@@ -12,4 +12,4 @@ time_selection:
   year: 2017
   month: 7
   days: [1]
-  hours: [9, 12, 15, 18, 21, 0]
+  hours: []

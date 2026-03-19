@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import Sequence
+from loguru import logger
 import polars as pl
 
 
@@ -75,10 +76,14 @@ def get_temporal_qois(case_names: list[str], sqls: list[Path], ts: TimeSelection
                 .group_by("datetimes")
                 .agg([pl.mean(i.nickname) for i in zonal_qois])
             )
-            return wind_df.join(zonal_df, on="datetimes").with_columns(
+            join_df = wind_df.join(zonal_df, on="datetimes").with_columns(
                 case_name=pl.lit(case_name)
             )
-        except:
+            logger.debug(case_name)
+            logger.debug(join_df)
+            return join_df
+        except Exception as e:
+            logger.critical(f"Failed to process case for {case_name} due to {e}")
             return None
 
     # this could potentially be a part of the registry like the environmenal variables
@@ -90,7 +95,10 @@ def get_temporal_qois(case_names: list[str], sqls: list[Path], ts: TimeSelection
 
     dfs = [make_case_df(case, sql) for case, sql in zip(case_names, sqls)]
     filter_dfs = [i for i in dfs if i is not None]
-    case_df = pl.concat(filter_dfs, how="vertical")
+    case_df = pl.concat(filter_dfs, how="diagonal")
+    logger.info(
+        f"Have {len(filter_dfs)} valid dfs of shapes {[i.shape for i in filter_dfs]}"
+    )
 
     enviro_df = make_multiqoi_df(QR.site.all, sqls[0], ts).drop("space_names")
 

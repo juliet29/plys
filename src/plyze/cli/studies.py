@@ -1,4 +1,7 @@
 import altair as alt
+import polars as pl
+import numpy as np
+
 import matplotlib.pyplot as plt
 from cyclopts import App
 from loguru import logger
@@ -28,6 +31,17 @@ def wp():
     df = get_temporal_qois(["a", "b"], [ex.sql, ex.sql], ets)
 
     return df.schema
+
+
+@app.command()
+def tconn():
+    lst = np.arange(3)
+    lst1 = np.arange(5, 7)
+    d1 = {"a": lst, "b": lst, "c": lst}
+    d2 = {"a": lst, "b": lst}
+    df1 = pl.DataFrame(d1)
+    df2 = pl.DataFrame(d2)
+    return pl.concat([df1, df2], how="diagonal")
 
 
 # @app.command()

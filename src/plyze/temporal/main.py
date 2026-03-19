@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Sequence
 from loguru import logger
 import polars as pl
+from rich.pretty import pretty_repr
 
 
 from plyze.qoi.data.data import select_custom_times, to_dataframe, TimeSelection
@@ -9,6 +10,7 @@ from plyze.qoi.data.interfaces import QOIandData
 from plyze.qoi.registries.interfaces import QOIType
 from plyze.qoi.registries.main import QOIRegistry as QR
 from plyze.qoi.xarray_helpers import find_drn_in_name
+from utils4plans.sets import set_difference
 
 # NOTE: this has a different organziation than rest of data, so may belong in JPGNV or a different repo entirely, depending on how extensive it becomes..
 #
@@ -79,8 +81,10 @@ def get_temporal_qois(case_names: list[str], sqls: list[Path], ts: TimeSelection
             join_df = wind_df.join(zonal_df, on="datetimes").with_columns(
                 case_name=pl.lit(case_name)
             )
-            logger.debug(case_name)
-            logger.debug(join_df)
+            with logger.contextualize(case_name={case_name}):
+                logger.debug(f"{pretty_repr(join_df.shape)}")
+                logger.debug(f"{pretty_repr(join_df.columns)}")
+
             return join_df
         except Exception as e:
             logger.critical(f"Failed to process case for {case_name} due to {e}")
@@ -97,14 +101,19 @@ def get_temporal_qois(case_names: list[str], sqls: list[Path], ts: TimeSelection
     filter_dfs = [i for i in dfs if i is not None]
     case_df = pl.concat(filter_dfs, how="diagonal")
     logger.info(
-        f"Have {len(filter_dfs)} valid dfs of shapes {[i.shape for i in filter_dfs]}"
+        f"Have {len(filter_dfs)} valid dfs of shapes {[i.shape for i in filter_dfs]}. \n\n Schema of case df: {pretty_repr(case_df.schema, expand_all=True)}"
     )
 
     enviro_df = make_multiqoi_df(QR.site.all, sqls[0], ts).drop("space_names")
+    logger.info(pretty_repr(enviro_df.schema))
 
-    join_df = case_df.join(enviro_df, on="datetimes")
-    assert join_df.schema == schema
-    return join_df
+    final_df = case_df.join(enviro_df, on="datetimes")
+
+    final_str = f"Join DF schema: {pretty_repr(final_df.schema)}. \n\n Expected schema: {pretty_repr(schema)}. \n\n Columns diff: {set_difference(list(schema.keys()), final_df.columns)}"
+
+    assert final_df.schema == schema, final_str
+
+    return final_df
 
 
 # TODO share the schema of the final df!

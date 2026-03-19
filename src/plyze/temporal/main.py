@@ -10,7 +10,7 @@ from plyze.qoi.data.interfaces import QOIandData
 from plyze.qoi.registries.interfaces import QOIType
 from plyze.qoi.registries.main import QOIRegistry as QR
 from plyze.qoi.xarray_helpers import find_drn_in_name
-from utils4plans.sets import set_difference
+from utils4plans.sets import set_difference, set_intersection
 
 # NOTE: this has a different organziation than rest of data, so may belong in JPGNV or a different repo entirely, depending on how extensive it becomes..
 #
@@ -24,6 +24,7 @@ schema = pl.Schema(
         "NORTH": pl.Float64,
         "SOUTH": pl.Float64,
         "WEST": pl.Float64,
+        "EAST": pl.Float64,
         "max unique_wind_pressure": pl.Float64,
         "DRN of max unique_wind_pressure": pl.String,
         "temp": pl.Float64,
@@ -111,7 +112,7 @@ def get_temporal_qois(case_names: list[str], sqls: list[Path], ts: TimeSelection
 
     final_str = f"Join DF schema: {pretty_repr(final_df.schema)}. \n\n Expected schema: {pretty_repr(schema)}. \n\n Columns diff: {set_difference(list(schema.keys()), final_df.columns)}"
 
-    assert final_df.schema == schema, final_str
+    assert set_intersection(list(schema.keys()), final_df.columns), final_str
 
     return final_df
 

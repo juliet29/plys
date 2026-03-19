@@ -24,8 +24,8 @@ publish-tag end:
   git push --tag
   sleep 2
   gh run list
-  sleep 10
-  gh run list
+  gh run watch
+
 
 
 #TODO: read from the tags automatically using sed / awk 

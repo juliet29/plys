@@ -27,13 +27,10 @@ def create_case_parent_map(path):
 
 samples_loc = Path(config["pathvars"]["samples_loc"])
 case_map = create_case_parent_map(samples_loc)
-print(f"\nCASE MAP:\n {case_map}\n")
 
 
 
-
-
-
+# --------  Eplus inputs and paths -----
 
 def make_eplus_inputs(wildcards):
     loc = Path(config["pathvars"]["samples_loc"])
@@ -42,6 +39,8 @@ def make_eplus_inputs(wildcards):
     sql = loc / parent / "{wildcards.sample}/results/eplusout.sql".format(wildcards=wildcards)
     return {"idf": idf, "sql": sql}
 
+
+
 def get_eplus_samples(wildcards): 
   loc = Path(config["pathvars"]["samples_loc"])
   path = loc / "{folder}" / "{sample}" / "results/eplusout.sql" 
@@ -49,6 +48,29 @@ def get_eplus_samples(wildcards):
 
   return results.sample
 
+
+
+
+# --------  Eplus inputs and samples without wild cards -----
+
+def get_eplus_samples_no_wildcard(): 
+  loc = Path(config["pathvars"]["samples_loc"])
+  path = loc / "{folder}" / "{sample}" / "results/eplusout.sql" 
+  results = glob_wildcards(path)
+  return results.sample
+
+
+def make_eplus_sql_inputs(sample):
+    loc = Path(config["pathvars"]["samples_loc"])
+    parent = case_map[sample]
+    sql = loc / parent / f"{sample}/results/eplusout.sql" 
+    return sql
+
+def extract_from_sql(path: str):
+  print(f"Hi! {Path(path).parts}")
+  return Path(subpath(path, ancestor=2)).name
+
+# --------  Further processes -----
 
 def get_qoi_samples(wildcards): 
   loc = Path(config["pathvars"]["qoi_loc"])
@@ -63,6 +85,8 @@ def get_jpg_samples(wildcards):
   results = glob_wildcards(path)
 
   return results.sample
+
+
 
 
 

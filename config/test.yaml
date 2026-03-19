@@ -7,3 +7,9 @@ pathvars:
 
 # Datetime format must be %Y-%m-%dT%H:%M:%. See [cyclopts rules on coercing dates](https://cyclopts.readthedocs.io/en/latest/rules.html#datetime)
 date_time: "2017-07-01T12:00:00"
+
+time_selection:
+  year: 2017
+  month: 7
+  days: [1]
+  hours: [9, 12, 15, 18, 21, 0]

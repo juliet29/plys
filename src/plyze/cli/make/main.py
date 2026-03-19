@@ -3,6 +3,7 @@ import altair as alt
 
 from cyclopts import App
 
+from plyze.cli.make.temporal import temporal
 from plyze.fpviz.main import plan_plot
 from plyze.paths import ProjectPaths
 from plyze.plots.altair_helpers import AltairRenderers
@@ -14,6 +15,7 @@ from plyze.cli.make.qoi import qoi
 app = App()
 app.command(jpg)
 app.command(qoi)
+app.command(temporal)
 
 
 def keep():

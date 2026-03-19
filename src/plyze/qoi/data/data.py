@@ -9,14 +9,16 @@ from plyze.qoi.xarray_helpers import convert_xarray_to_polars, select_time
 from datetime import datetime
 
 from plyze.qoi.data.spaces import create_space_df
+from typing import Annotated
+from cyclopts import Parameter
 
 
 @dataclass
 class TimeSelection:
     year: int
     month: int
-    days: list[int]
-    hours: list[int]
+    days: Annotated[list[int], Parameter(consume_multiple=True)]
+    hours: Annotated[list[int], Parameter(consume_multiple=True)]
 
     def __post_init__(self):
         if not self.hours:
